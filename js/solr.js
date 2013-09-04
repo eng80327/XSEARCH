@@ -1,4 +1,5 @@
 //http://evolvingweb.ca/solr/reuters/select?wt=json&q=money&facet=true&facet.field=topics&facet.field=organisations&facet.field=exchanges&facet.limit=20&facet.mincount=1&start=0&json.wrf=jQuery110207893310573417693_1378285314982&_=1378285314991
+//Based on: https://github.com/evolvingweb/ajax-solr.git
 
 function SolrSearch($, ko, settings){
 
