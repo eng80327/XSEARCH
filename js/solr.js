@@ -36,6 +36,60 @@ function SolrSearch($, ko, settings){
             return this.category() + ' (' + this.label() + ')';
         }, this);
 
+        self.queryString = function()
+        {
+            return '&fq=' + self.category() + ':' + self.label();
+        }
+
+
+    }
+
+    function XFacetDateModel(_title)
+    {
+        var self = this;
+
+        self.title = ko.observable(_title);
+        self.valueList = ko.observableArray();
+
+    }
+
+    function XFacetDateValueModel(_category, _startDate, _endDate, _count, _gap, _index)
+    {
+        var self = this;
+
+        self.category = ko.observable(_category);
+        self.startDate = ko.observable(_startDate);
+        self.endDate = ko.observable(_endDate);
+        self.count = ko.observable(_count);
+        self.gap = ko.observable(_gap);
+        self.index = ko.observable(_index);
+
+        self.label = function()
+        {
+            if(self.index()==1)
+            {
+                return 'Last ' + self.gap() + ' Days';
+            }else{
+                var startRange = (self.index()-1)* self.gap();
+                var endRange = self.index() * self.gap();
+                return startRange + ' -  ' + endRange + ' Days';
+            }
+        }
+
+        self.display = ko.computed(function(){
+            return this.label() + ' (' + this.count() + ')';
+        }, this);
+
+        self.displaySelected = ko.computed(function(){
+            return this.category() + ' (' + this.label() + ')';
+        }, this);
+
+        self.queryString = function()
+        {
+            return '&fq=' + self.category() + ':[' + self.startDate() + ' TO ' + self.endDate() + ']';
+        }
+
+
     }
 
     function XResultSummaryModel(_totalMatching, _currStart, _currEnd, _query)
@@ -79,10 +133,11 @@ function SolrSearch($, ko, settings){
     {
         var self = this;
 
-        self.searchTerm = ko.observable('the');
+        self.searchTerm = ko.observable('money');
         self.selectedFacetList = ko.observableArray();
 
         self.facetList = ko.observableArray();
+        self.facetDateList = ko.observableArray();
         self.resultSummary = new XResultSummaryModel();
         self.resultList = ko.observableArray();
         self.pageList = ko.observableArray();
@@ -108,6 +163,7 @@ function SolrSearch($, ko, settings){
         self.clear = function()
         {
             self.facetList.removeAll();
+            self.facetDateList.removeAll();
             self.resultList.removeAll();
             self.pageList.removeAll();
         }
@@ -190,13 +246,13 @@ function SolrSearch($, ko, settings){
         self.unselectFacet = function(facet)
         {
             self.selectedFacetList.remove(facet);
-            self.search();
+            self.startSearch();;
         }
 
         self.selectFacet = function(facet)
         {
             self.selectedFacetList.push(facet);
-            self.search();
+            self.startSearch();
         }
 
         self.addFacet = function(_category, fbFacet)
@@ -222,6 +278,56 @@ function SolrSearch($, ko, settings){
             if(facet.valueList().length>0)
             {
                 self.facetList.push(facet);
+            }
+
+        }
+
+        self.addFacetDate = function(_category, fbFacetDate)
+        {
+
+            var selectedItem = ko.utils.arrayFilter(self.selectedFacetList(), function(item){
+                if(item.category() == _category){
+                    return true;
+                }
+                return false;
+            });
+            if(selectedItem.length!=0){
+                return;
+            }
+
+            var facetDate = new XFacetDateModel(_category);
+            var facetDateValuePrevious = null;
+            var gap = opts.searchFacetDateGap;
+            var i = 1;
+
+            $.each(fbFacetDate, function(index, data){
+
+                if(index=='gap')
+                {
+                    return;
+                }
+                if(index=='end')
+                {
+                    facetDateValuePrevious.endDate(data) ;
+                    return;
+                }
+
+                var facetDataValue = new XFacetDateValueModel(_category, index, null, data, gap, i);
+                i = i + 1;
+
+                if(facetDateValuePrevious!=null)
+                {
+                    facetDateValuePrevious.endDate(index);
+                }
+
+                facetDate.valueList.push(facetDataValue);
+                facetDateValuePrevious = facetDataValue;
+
+            });
+
+            if(facetDate.valueList().length>0)
+            {
+                self.facetDateList.push(facetDate);
             }
 
         }
@@ -253,6 +359,18 @@ function SolrSearch($, ko, settings){
                 });
             }
 
+            if(opts.searchFacetDateList.length>0)
+            {
+                $.each(opts.searchFacetDateList, function(index, data){
+
+                    searchUrl = searchUrl + "&facet.date=" + data.field;
+                    searchUrl = searchUrl + "&facet.date.start=" + encodeURIComponent(data.startDate);
+                    searchUrl = searchUrl + "&facet.date.end=" + encodeURIComponent(data.endDate);
+                    searchUrl = searchUrl + "&facet.date.gap=" + encodeURIComponent(data.gap);
+
+                });
+            }
+
             searchUrl = searchUrl + '&facet.limit=' + opts.searchFacetLimit;
             searchUrl = searchUrl + '&facet.mincount=' + opts.searchFacetMinCount;
 
@@ -261,7 +379,7 @@ function SolrSearch($, ko, settings){
             {
                 $.each(self.selectedFacetList(), function(index, data){
 
-                    searchUrl = searchUrl + '&fq=' + data.category() + ':' + data.label() ;
+                    searchUrl = searchUrl + data.queryString() ;
 
                 });
             }
@@ -305,6 +423,13 @@ function SolrSearch($, ko, settings){
                     self.addFacet(index, fbFacet);
 
                 });
+
+                $.each(data.facet_counts.facet_dates, function(index, fbFacetDate){
+
+                    self.addFacetDate(index, fbFacetDate);
+
+                });
+
                 $.each(data.response.docs, function(index, result){
 
                     var result = new XResultModel(result.title, result.text, 'http://google.com');
@@ -344,8 +469,36 @@ SolrSearch.DefaultSettings = {
     searchUrl: "http://evolvingweb.ca/solr/reuters/select",
     searchFacetList: ['topics', 'organisations', 'exchanges'],
     searchFacetLimit: 20,
-    searchFacetMinCount: 1
+    searchFacetMinCount: 1,
+    searchFacetDateGap: 10,
+    searchFacetDateList:  [
+            {
+                field: 'date',
+                //startDate: 'NOW/DAY-30DAYS',
+                //endDate: 'NOW/DAY+30DAYS',
+                //gap: '+5DAY',
+                startDate: "1987-02-26T00:00:00.000Z/DAY",
+                endDate: "1987-10-20T00:00:00.000Z/DAY+1DAY",
+                gap: "+10DAY"
+            }
+        ]
 
 };
+
+/**
+ * For Reference.  Solr Date Facetting.
+ * facet.date.start: "NOW/DAY-30DAYS"
+ * facet.date.end: "NOW/DAY+30DAYS"
+ * facet.date.gap: "+10DAY"
+ * facet.date: "date"
+ *
+ *             {
+                field: 'date',
+                startDate: 'NOW/DAY-3000DAYS',
+                endDate: 'NOW/DAY+30DAYS',
+                gap: '+10DAY'
+            }
+ *
+ */
 
 

@@ -224,19 +224,19 @@ function FunnelbackSearch($, ko, settings){
         self.unselectFacet = function(facet)
         {
             self.selectedFacetList.remove(facet);
-            self.search();
+            self.startSearch();
         }
 
         self.selectFacet = function(facet)
         {
             self.selectedFacetList.push(facet);
-            self.search();
+            self.startSearch();
         }
 
         self.selectContext = function(context)
         {
             self.searchTerm(context.query());
-            self.search();
+            self.startSearch();
         }
 
         self.addFacet = function(fbFacet)
