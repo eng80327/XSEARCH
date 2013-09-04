@@ -1,0 +1,126 @@
+<html>
+<head>
+    <script language="javascript" src="js/jquery-1.10.2.min.js"></script>
+    <script language="javascript" src="js/knockout-2.3.0.js"></script>
+    <script language="javascript" src="js/solr.js"></script>
+    <script>
+
+        var solrSearch = null;
+
+        $(function(){
+
+            solrSearch = new SolrSearch($, ko, {
+
+            });
+            solrSearch.init("search-component");
+
+        })
+
+
+    </script>
+    <style>
+        .search-left-panel, .search-main-panel, .search-right-panel{
+            float:left;
+        }
+
+        .search-left-panel, .search-right-panel
+        {
+            width: 200px;
+        }
+
+        .search-main-panel
+        {
+            width: 800px;
+        }
+
+        .best-bet-panel
+        {
+            border: 1px dashed blue;
+            background: greenyellow;
+        }
+
+        .search-page
+        {
+            width:20px;
+            height:20px;
+            border: 1px solid black;
+            float: left;
+        }
+
+        .otherPage
+        {
+            background: blue;
+        }
+
+        .currentPage
+        {
+            background: green;
+        }
+
+        .clear
+        {
+            clear:both;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="wrapper">
+    <div id="main">
+        <div class="header"></div>
+        <div class="content">
+
+
+            <div id="search-component">
+
+                <div class="search-panel">
+                    <label for="">Search</label>
+                    <input type="text" data-bind="value: searchTerm" />
+                    <button data-bind="click: startSearch" >Search</button>
+                </div>
+
+                <div class="search-summary" data-bind="html: searchSummary">
+
+                </div>
+
+                <div class="search-result"  data-bind="visible:resultSummary.totalMatching()>0">
+
+                    <div class="search-left-panel">
+                        <div class="selected-facets" data-bind="visible: selectedFacetList().length>0, foreach: selectedFacetList">
+                            <div class="facet-text" data-bind="text: displaySelected">  </div>
+                            <div class="facet-remove"><a data-bind='click: $root.unselectFacet'>X</a></div>
+
+                        </div>
+                        <div class="search-facets" data-bind="foreach: facetList">
+                            <h2 data-bind="text: title"></h2>
+                            <ul data-bind="foreach: valueList">
+                                <a data-bind="click: $root.selectFacet"><li data-bind="text: display"></li></a>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="search-main-panel">
+
+                        <div class="search-results" data-bind="foreach: resultList">
+                            <a data-bind="attr: {href: url, target: '_blank'}"><h1 data-bind="text: title"></h1></a>
+                            <p data-bind="text: summary"></p>
+                        </div>
+
+                        <div class="search-page" data-bind="visible:showPagePrevious, click:$root.goToPagePrevious">[Previous]</div>
+                        <div class="search-pagination" data-bind="visible:resultSummary.currStart()>0, foreach: pageList">
+                            <div class="search-page" data-bind="text:pageNo, click:$root.goToPage, css:pageStatus"></div>
+                        </div>
+                        <div class="search-page" data-bind="visible:showPageNext, click:$root.goToPageNext">[Next]</div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="footer"></div>
+    </div>
+</div>
+
+</body>
+</html>
