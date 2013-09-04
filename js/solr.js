@@ -251,6 +251,11 @@ function SolrSearch($, ko, settings){
 
         self.selectFacet = function(facet)
         {
+            if(facet.count()==0)
+            {
+                return;
+            }
+
             self.selectedFacetList.push(facet);
             self.startSearch();
         }
@@ -390,11 +395,6 @@ function SolrSearch($, ko, settings){
                 searchUrl = searchUrl + '&start=' + startRecord;
             }
 
-            /**
-            searchUrl = 'http://evolvingweb.ca/solr/reuters/select?wt=json&facet=true&q=*%3A*&facet.field=topics&facet.field=organisations&facet.field=exchanges&' +
-                'facet.field=countryCodes' +
-                '&facet.limit=20&facet.mincount=1&f.topics.facet.limit=50&f.countryCodes.facet.limit=-1&facet.date=date&facet.date.start=1987-02-26T00%3A00%3A00.000Z%2FDAY&facet.date.end=1987-10-20T00%3A00%3A00.000Z%2FDAY%2B1DAY&facet.date.gap=%2B1DAY&json.nl=map';
-            **/
             $.ajax({
                 type: "GET",
                 url: searchUrl,

@@ -118,7 +118,7 @@
                         <div class="search-facets" data-bind="foreach: facetDateList">
                             <h2 data-bind="text: title"></h2>
                             <ul data-bind="foreach: valueList">
-                                <a data-bind="click: $root.selectFacet"><li data-bind="text: display"></li></a>
+                                <a data-bind="visible:count()>0, click: $root.selectFacet"><li data-bind="text: display"></li></a>
                             </ul>
                         </div>
                     </div>
