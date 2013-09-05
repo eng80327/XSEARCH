@@ -13,7 +13,7 @@
                     searchCollection: "Ava",
                     searchUrl: "http://localhost:81/s/search.json",
                     searchCollection: "xtremax-nea-site",
-                    searchUrl: "http://search-au.funnelback.com/s/search.json",
+                    searchUrl: "http://search-au.funnelback.com/s/search.json"
                 });
                 fbSearch.init("search-component");
 
@@ -98,7 +98,7 @@
                             <div class="search-facets" data-bind="foreach: facetList">
                                 <h2 data-bind="text: title"></h2>
                                 <ul data-bind="foreach: valueList">
-                                    <a data-bind="click: $root.selectFacet"><li data-bind="text: display"></li></a>
+                                    <li data-bind="click: $root.selectFacet, text: display"></li>
                                 </ul>
                             </div>
                         </div>
@@ -124,7 +124,7 @@
                         <div class="search-right-panel" data-bind="foreach: contextList">
                             <h2 data-bind="text: title"></h2>
                             <ul data-bind="foreach: valueList">
-                                <a data-bind="click: $root.selectContext"><li data-bind="text: display"></li></a>
+                                <li data-bind="click: $root.selectContext, text: display"></li>
                             </ul>
 
                         </div>
