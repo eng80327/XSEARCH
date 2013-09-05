@@ -5,6 +5,31 @@ function FunnelbackSearch($, ko, settings){
     var viewModel = null;
     var opts = $.extend({}, FunnelbackSearch.DefaultSettings, settings);
 
+    self.availableTags = [
+        "ActionScript",
+        "AppleScript",
+        "Asp",
+        "BASIC",
+        "C",
+        "C++",
+        "Clojure",
+        "COBOL",
+        "ColdFusion",
+        "Erlang",
+        "Fortran",
+        "Groovy",
+        "Haskell",
+        "Java",
+        "JavaScript",
+        "Lisp",
+        "Perl",
+        "PHP",
+        "Python",
+        "Ruby",
+        "Scala",
+        "Scheme"
+    ];
+
     //2.  KO Objects
     function XFacetModel(_title)
     {
@@ -122,6 +147,8 @@ function FunnelbackSearch($, ko, settings){
         self.pageList = ko.observableArray();
         self.showPagePrevious = ko.observable(false);
         self.showPageNext = ko.observable(false);
+
+
 
         self.searchSummary = ko.computed(function(){
 
@@ -371,6 +398,95 @@ function FunnelbackSearch($, ko, settings){
 
         ko.applyBindings(self.viewModel, selectedElement);
 
+        $( "#" + opts.searchHtmlElementID ).autocomplete({
+
+            select: function(event, ui){
+
+                console.log('selected2');
+                fbSearch.viewModel.searchTerm(ui.item.value);
+                fbSearch.viewModel.startSearch();
+
+            },
+            ////
+
+            source: function (request, response) {
+                jQuery.ajax({
+                    type: 'GET',
+                    url:      opts.suggestUrl
+                        + '?collection=' + opts.searchCollection
+                        + '&partial_query=' + request.term.replace(/ /g, '+')
+                        + '&show=' + 10
+                        + '&sort=' + 0
+                        + '&alpha=' +.5
+                        + '&fmt=json',
+                    dataType: 'jsonp',
+                    error: function (xhr, textStatus, errorThrown) {
+                        if (window.console) {
+                            console.log('Autocomplete error: ' + textStatus + ', ' + errorThrown);
+                        }
+                    },
+                    success: function (data) {
+                        var responses = new Array();
+                        var categorized = new Array();
+                        var categoryLabels = new Array();
+
+                        for (var i = 0; i < data.length; i++) {
+                            var out;
+                            var suggestion = data[i];
+
+                            if (suggestion == null) {
+                                continue;
+                            }
+
+                            if (typeof(suggestion) == 'string') {
+                                // Single string suggestion
+                                responses.push({
+                                    label: suggestion,
+                                    matchOn: request.term
+                                });
+                            } else if (typeof(suggestion) == 'object') {
+                                if (suggestion.cat) {
+                                    if (!categorized[suggestion.cat]) {
+                                        categorized[suggestion.cat] = new Array();
+                                        categoryLabels.push(suggestion.cat);
+                                    }
+                                    categorized[suggestion.cat].push({
+                                        label: (suggestion.disp) ? suggestion.disp : suggestion.key,
+                                        value: (suggestion.action_t == 'Q') ? suggestion.action : suggestion.key,
+                                        extra: suggestion,
+                                        matchOn: request.term
+                                    });
+                                } else {
+                                    responses.push({
+                                        label: (suggestion.disp) ? suggestion.disp : suggestion.key,
+                                        value: (suggestion.action_t == 'Q') ? suggestion.action : suggestion.key,
+                                        extra: suggestion,
+                                        matchOn: request.term
+                                    });
+                                }
+                            }
+                        }
+
+                        // Add categorized suggestions, with category header
+                        for (var i = 0; i < categoryLabels.length; i++) {
+                            var cLabel = categoryLabels[i];
+                            responses.push({
+                                label: cLabel,
+                                category: true
+                            });
+                            for (var j = 0; j < categorized[cLabel].length; j++) {
+                                responses.push(categorized[cLabel][j]);
+                            }
+                        }
+                        response(responses);
+                    }
+                });
+            }
+
+            /////
+
+        });
+
     };
 
 
@@ -381,7 +497,9 @@ FunnelbackSearch.DefaultSettings = {
     pageSize: 10,
     noPagesDisplay : 10,
     noPagesDisplayBeforeCurrent : 4,
+    searchHtmlElementID : 'query',
     //searchUrl: "http://fb.localdev.info/s/search.json"
+    suggestUrl : "http://search-au.funnelback.com/s/suggest.json",
     searchUrl: "http://search-au.funnelback.com/s/search.json"
 };
 

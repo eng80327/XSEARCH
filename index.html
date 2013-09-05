@@ -1,6 +1,9 @@
 <html>
     <head>
-        <script language="javascript" src="js/jquery-1.10.2.min.js"></script>
+        <!--<script language="javascript" src="js/jquery-1.10.2.min.js"></script>-->
+        <script src="http://code.jquery.com/jquery-1.7.2.js"></script>
+        <script src="http://code.jquery.com/ui/1.8.18/jquery-ui.js"></script>
+
         <script language="javascript" src="js/knockout-2.3.0.js"></script>
         <script language="javascript" src="js/funnelback.js"></script>
         <script>
@@ -13,7 +16,8 @@
                     searchCollection: "Ava",
                     searchUrl: "http://localhost:81/s/search.json",
                     searchCollection: "xtremax-nea-site",
-                    searchUrl: "http://search-au.funnelback.com/s/search.json"
+                    searchUrl: "http://search-au.funnelback.com/s/search.json",
+                    searchHtmlElementID: "query"
                 });
                 fbSearch.init("search-component");
 
@@ -65,6 +69,23 @@
                 clear:both;
             }
 
+            ul.ui-autocomplete {
+                background: none repeat scroll 0 0 white;
+                border: 1px solid #BBBBDD;
+                cursor: pointer;
+                font-family: 'Arial';
+                left: 56px !important;
+                list-style-type: none;
+                margin: 10px 0 0;
+                padding: 0;
+                position: absolute;
+                text-align: left;
+                top: 22px !important;
+                width: 385px;
+            }
+            ul.ui-autocomplete li.ui-menu-item a { display:block;}
+            ul.ui-autocomplete li.ui-menu-item a.ui-state-hover { background-color:#EFEFED;color:#3d96c1 !important;}
+
         </style>
     </head>
     <body>
@@ -79,7 +100,7 @@
 
                     <div class="search-panel">
                         <label for="">Search</label>
-                        <input type="text" data-bind="value: searchTerm" />
+                        <input id="query" type="text" data-bind="value: searchTerm" />
                         <button data-bind="click: startSearch" >Search</button>
                     </div>
 
