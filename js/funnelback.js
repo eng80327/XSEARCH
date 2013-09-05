@@ -1,3 +1,15 @@
+ko.bindingHandlers.returnAction = {
+    init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
+        var value = ko.utils.unwrapObservable(valueAccessor());
+
+        $(element).keydown(function(e) {
+            if (e.which === 13) {
+                value(viewModel);
+            }
+        });
+    }
+};
+
 function FunnelbackSearch($, ko, settings){
 
     //1.   Variables and Methods
@@ -49,6 +61,7 @@ function FunnelbackSearch($, ko, settings){
         self.label = ko.observable(_label);
         self.count = ko.observable(_count);
         self.queryStringParam = ko.observable(_queryStringParam);
+
 
         self.display = ko.computed(function(){
             return this.label() + ' (' + this.count() + ')';
@@ -147,24 +160,27 @@ function FunnelbackSearch($, ko, settings){
         self.pageList = ko.observableArray();
         self.showPagePrevious = ko.observable(false);
         self.showPageNext = ko.observable(false);
+        self.message = ko.observable();
 
-
-
-        self.searchSummary = ko.computed(function(){
+        self.displayMessage = function()
+        {
+            var results = '';
 
             if(this.resultSummary.currStart()==null)
             {
-                return "";
+                results =  "";
             }
 
             if(this.resultSummary.totalMatching()==0)
             {
-                return 'No results found.  Try again!'
+                results = 'No results found for <b>' + self.searchTerm() + '</b>  Try again!'
             }else{
-                return this.resultSummary.currStart() + '-' + this.resultSummary.currEnd() + ' of ' +  this.resultSummary.totalMatching() + ' search results for <b>' + this.searchTerm() + '</b>';
+                results = self.resultSummary.currStart() + '-' + self.resultSummary.currEnd() + ' of ' +  self.resultSummary.totalMatching() + ' search results for <b>' + self.searchTerm() + '</b>';
             }
 
-        }, this);
+            self.message(results);
+        }
+
 
         self.clear = function()
         {
@@ -337,6 +353,7 @@ function FunnelbackSearch($, ko, settings){
             }).done(function(data){
 
                 self.processSearch(data);
+                self.displayMessage();
 
              })
 

@@ -100,11 +100,11 @@
 
                     <div class="search-panel">
                         <label for="">Search</label>
-                        <input id="query" type="text" data-bind="value: searchTerm" />
+                        <input id="query" type="text" data-bind="value: searchTerm, returnAction: startSearch" />
                         <button data-bind="click: startSearch" >Search</button>
                     </div>
 
-                    <div class="search-summary" data-bind="html: searchSummary">
+                    <div class="search-summary" data-bind="html: message">
 
                     </div>
 
