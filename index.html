@@ -6,6 +6,7 @@
 
         <script language="javascript" src="js/knockout-2.3.0.js"></script>
         <script language="javascript" src="js/funnelback.js"></script>
+        <link rel="stylesheet" href="css/funnelback.css">
         <script>
 
             var fbSearch = null;
@@ -13,10 +14,12 @@
             $(function(){
 
                 fbSearch = new FunnelbackSearch($, ko, {
-                    searchCollection: "Ava",
-                    searchUrl: "http://localhost:81/s/search.json",
-                    searchCollection: "xtremax-nea-site",
-                    searchUrl: "http://search-au.funnelback.com/s/search.json",
+                    searchCollection: "Ava_Local",
+                    baseUrl: "http://localhost:8080",
+                    //searchUrl: "http://localhost:8080/s/search.json",
+                    //suggestUrl : "http://localhost:8080/s/suggest.json",
+                    //searchCollection: "xtremax-nea-site",
+                    //searchUrl: "http://search-au.funnelback.com/s/search.json",
                     searchHtmlElementID: "query"
                 });
                 fbSearch.init("search-component");
@@ -26,65 +29,6 @@
 
         </script>
         <style>
-            .search-left-panel, .search-main-panel, .search-right-panel{
-                float:left;
-            }
-
-            .search-left-panel, .search-right-panel
-            {
-                width: 200px;
-            }
-
-            .search-main-panel
-            {
-                width: 800px;
-            }
-
-            .best-bet-panel
-            {
-                border: 1px dashed blue;
-                background: greenyellow;
-            }
-
-            .search-page
-            {
-                width:20px;
-                height:20px;
-                border: 1px solid black;
-                float: left;
-            }
-
-            .otherPage
-            {
-                background: blue;
-            }
-
-            .currentPage
-            {
-                background: green;
-            }
-
-            .clear
-            {
-                clear:both;
-            }
-
-            ul.ui-autocomplete {
-                background: none repeat scroll 0 0 white;
-                border: 1px solid #BBBBDD;
-                cursor: pointer;
-                font-family: 'Arial';
-                left: 56px !important;
-                list-style-type: none;
-                margin: 10px 0 0;
-                padding: 0;
-                position: absolute;
-                text-align: left;
-                top: 22px !important;
-                width: 385px;
-            }
-            ul.ui-autocomplete li.ui-menu-item a { display:block;}
-            ul.ui-autocomplete li.ui-menu-item a.ui-state-hover { background-color:#EFEFED;color:#3d96c1 !important;}
 
         </style>
     </head>
@@ -96,15 +40,15 @@
             <div class="content">
 
 
-                <div id="search-component">
+                <div id="search-component" class="search-component" >
 
                     <div class="search-panel">
                         <label for="">Search</label>
-                        <input id="query" type="text" data-bind="value: searchTerm, returnAction: startSearch" />
+                        <input id="query" type="text" data-bind="value: searchTerm, valueUpdate: 'afterkeydown', returnAction: startSearch" />
                         <button data-bind="click: startSearch" >Search</button>
                     </div>
 
-                    <div class="search-summary" data-bind="html: message">
+                    <div class="search-summary" data-bind="visible: message, html: message" >
 
                     </div>
 
@@ -112,9 +56,11 @@
 
                         <div class="search-left-panel">
                             <div class="selected-facets" data-bind="visible: selectedFacetList().length>0, foreach: selectedFacetList">
-                                <div class="facet-text" data-bind="text: displaySelected">  </div>
-                                <div class="facet-remove"><a data-bind='click: $root.unselectFacet'>X</a></div>
-
+                                <div class="selected-facet">
+                                    <div class="facet-category" data-bind="text: category">  </div>
+                                    <div class="facet-label" data-bind="text: label">  </div>
+                                    <div class="facet-remove"><a data-bind='click: $root.unselectFacet'>(x)</a></div>
+                                </div>
                             </div>
                             <div class="search-facets" data-bind="foreach: facetList">
                                 <h2 data-bind="text: title"></h2>
@@ -126,7 +72,7 @@
                         <div class="search-main-panel">
 
                             <div class="best-bet-panel" data-bind="visible: bestBetList().length>0, foreach: bestBetList">
-                                <h1 data-bind="text: title"></h1>
+                                <a data-bind="attr: {href: url, target: '_blank'}"><h1 data-bind="text: title"></h1></a>
                                 <p data-bind="text: summary"></p>
                             </div>
 

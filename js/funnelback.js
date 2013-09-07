@@ -17,6 +17,9 @@ function FunnelbackSearch($, ko, settings){
     var viewModel = null;
     var opts = $.extend({}, FunnelbackSearch.DefaultSettings, settings);
 
+    opts.searchUrl = opts.baseUrl + '/s/search.json';
+    opts.suggestUrl = opts.baseUrl + '/s/suggest.json';
+
     self.availableTags = [
         "ActionScript",
         "AppleScript",
@@ -68,7 +71,7 @@ function FunnelbackSearch($, ko, settings){
         }, this);
 
         self.displaySelected = ko.computed(function(){
-            return this.category() + ' (' + this.label() + ')';
+            return "<div class='facet-category'>" + this.category() + "</div><div class='facet-value'>" + this.label() + '</div>';
         }, this);
 
     }
@@ -114,7 +117,7 @@ function FunnelbackSearch($, ko, settings){
 
         self.title = ko.observable(_title);
         self.summary = ko.observable(_summary);
-        self.url = ko.observable(_url);
+        self.url = ko.observable(opts.baseUrl  + _url);
 
     }
 
@@ -124,7 +127,7 @@ function FunnelbackSearch($, ko, settings){
 
         self.title = ko.observable(_title);
         self.summary = ko.observable(_description);
-        self.url = ko.observable(_url);
+        self.url = ko.observable(opts.baseUrl  + _url);
     }
 
     function XPageModel(_pageNo, _pageSize, _currentPageFlag)
@@ -161,6 +164,7 @@ function FunnelbackSearch($, ko, settings){
         self.showPagePrevious = ko.observable(false);
         self.showPageNext = ko.observable(false);
         self.message = ko.observable();
+
 
         self.displayMessage = function()
         {
@@ -516,8 +520,9 @@ FunnelbackSearch.DefaultSettings = {
     noPagesDisplayBeforeCurrent : 4,
     searchHtmlElementID : 'query',
     //searchUrl: "http://fb.localdev.info/s/search.json"
-    suggestUrl : "http://search-au.funnelback.com/s/suggest.json",
-    searchUrl: "http://search-au.funnelback.com/s/search.json"
+    //suggestUrl : "http://search-au.funnelback.com/s/suggest.json",
+    //searchUrl: "http://search-au.funnelback.com/s/search.json",
+    baseUrl: "http://search-au.funnelback.com"
 };
 
 

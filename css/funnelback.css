@@ -1,0 +1,166 @@
+.search-component
+{
+    color: black;
+    font-family: "Arial", sans-serif;
+}
+
+
+.search-component .search-left-panel, .search-component .search-main-panel, .search-component .search-right-panel{
+    float:left;
+}
+
+.search-component .search-left-panel, .search-component .search-right-panel
+{
+    width: 200px;
+}
+
+.search-component .search-main-panel
+{
+    width: 800px;
+    padding: 10px;
+}
+
+.search-component .search-left-panel, .search-component .search-right-panel
+{
+    padding: 10px 0 0 0;
+}
+
+
+
+.search-component .best-bet-panel
+{
+    background-color: #FFF8DD;
+    padding: 5px;
+}
+
+.search-component .search-pagination
+{
+    overflow: hidden;
+    float: left;
+}
+
+.search-component .search-page
+{
+    height:20px;
+    float: left;
+    padding: 5px;
+    overflow: hidden;
+    color: blue;
+    cursor: pointer;
+}
+
+.search-component .search-page:hover
+{
+   text-decoration: underline;
+}
+
+.search-component .currentPage, .search-component .currentPage:hover
+{
+    color: black;
+    text-decoration: none;
+}
+
+.search-component .clear
+{
+    clear:both;
+}
+
+ul.ui-autocomplete {
+    background: none repeat scroll 0 0 white;
+    border: 1px solid #BBBBDD;
+    cursor: pointer;
+    font-family: 'Arial';
+    left: 56px !important;
+    list-style-type: none;
+    margin: 10px 0 0;
+    padding: 0;
+    position: absolute;
+    text-align: left;
+    top: 22px !important;
+    width: 385px;
+}
+ ul.ui-autocomplete li.ui-menu-item a { display:block;}
+ ul.ui-autocomplete li.ui-menu-item a.ui-state-hover { background-color:#EFEFED;color:#3d96c1 !important;}
+
+
+.search-component .search-summary
+{
+    background-color: #EFEFFF;
+    border: 1px solid #BBBBDD;
+    border-width: 1px 0;
+    margin: 15px -8px 0px -8px;
+    padding: 5px 0 5px 18px;
+    min-width: 740px;
+    font-size: small;
+}
+
+.search-component .selected-facets
+{
+    clear: both;
+    overflow: hidden;
+}
+
+.search-component .selected-facet
+{
+    background-color: #EFEFFF;
+    border: 1px solid #BBBBDD;
+    overflow: hidden;
+    margin: 0 0 5px 0;
+    padding: 5px;
+}
+
+.search-component .facet-category
+{
+    clear: both;
+    font-size: 0.8em;
+    padding: 0 5px 0 0;
+}
+
+.search-component .facet-label
+{
+    padding: 0 5px 0 0;
+    color: #0645AD;
+    font-weight: bold;
+    float: left;
+}
+
+.search-component .facet-remove
+{
+    color: #0645AD;
+    float: left;
+}
+
+
+.search-component h2
+{
+    font-weight: bold;
+    font-style: italic;
+    font-size: 1.1em;
+}
+
+.search-component h1
+{
+    font-size: 1.1em;
+}
+
+.search-component ul li
+{
+    cursor: pointer;
+    color: #1F1FcF;
+}
+
+.search-component ul li:hover
+{
+    text-decoration: underline;
+}
+
+.search-component a
+{
+    color: #0645AD;
+}
+
+.search-component a:visited
+{
+    color: #0B0080
+}
+
