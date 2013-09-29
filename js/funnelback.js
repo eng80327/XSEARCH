@@ -282,7 +282,13 @@ function FunnelbackSearch($, ko, settings){
 
         self.selectContext = function(context)
         {
-            self.searchTerm(context.query());
+            if(context.query()==null)
+            {
+                self.searchTerm(self.searchTerm() + ' |u:' + context.label() );
+            }else{
+                self.searchTerm(context.query());
+            }
+
             self.startSearch();
         }
 
@@ -333,7 +339,12 @@ function FunnelbackSearch($, ko, settings){
             var searchUrl = opts.searchUrl + '?collection=' + opts.searchCollection;
             if(self.searchTerm()!='')
             {
-                searchUrl = searchUrl + '&query=' + self.searchTerm();
+                if(opts.searchMetaField)
+                {
+                    searchUrl = searchUrl + '&meta_' + opts.searchMetaField + '_orsand=' + self.searchTerm();
+                }else{
+                    searchUrl = searchUrl + '&query=' + self.searchTerm();
+                }
             }
             if(self.selectedFacetList().length>0)
             {
